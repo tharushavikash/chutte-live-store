@@ -2,11 +2,8 @@ import TopUpWidget from "@/components/site/TopUpWidget";
 import Faq from "@/components/site/Faq";
 import { orders, packages, paymentMethods, memberships } from "@/db/schema";
 import { db } from "@/db";
-import Navbar from "@/components/site/Navbar";
-import Footer from "@/components/site/Footer";
-import HeroSlider from "@/components/site/HeroSlider";
-import GameGrid from "@/components/site/GameGrid";
-import SpecialOffers from "@/components/site/SpecialOffers";
+import Header from "@/components/site/Header";
+import Hero from "@/components/site/Hero";
 
 export default async function Home() {
   const allPackages = await db.select().from(packages);
@@ -15,10 +12,10 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white selection:bg-purple-500 selection:text-white">
-      <Navbar />
+      <Header />
       
       <main className="container mx-auto px-4 py-6 space-y-12">
-        <HeroSlider />
+        <Hero />
         
         <section id="store" className="scroll-mt-20">
           <TopUpWidget 
@@ -27,15 +24,9 @@ export default async function Home() {
             paymentMethods={allPaymentMethods} 
           />
         </section>
-
-        <SpecialOffers />
-        
-        <GameGrid />
         
         <Faq />
       </main>
-
-      <Footer />
     </div>
   );
 }

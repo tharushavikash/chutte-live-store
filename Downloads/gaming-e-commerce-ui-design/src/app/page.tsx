@@ -25,7 +25,7 @@ export default async function Home() {
       <Header />
       
       <main className="container mx-auto px-4 py-6 space-y-12">
-        <Hero />
+        <Hero delivered={0} />
         
         <section id="store" className="scroll-mt-20">
           <TopUpWidget 

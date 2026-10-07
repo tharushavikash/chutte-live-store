@@ -119,8 +119,8 @@ export default async function AdminDashboard() {
                 {o.playerId.slice(0, 2)}***{o.playerId.slice(-2)}
               </span>
               <span className="flex-1 text-[12.5px] text-ink-soft">
-                {o.diamonds.toLocaleString()} 💎 · {o.paymentMethod}
-              </span>
+  {o.itemName} · {o.paymentMethod}
+</span>
               <span className="font-display text-[12.5px] font-bold text-ink">
                 {formatRs(o.price)}
               </span>

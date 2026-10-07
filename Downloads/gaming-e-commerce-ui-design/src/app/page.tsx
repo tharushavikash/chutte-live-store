@@ -8,6 +8,7 @@ import Hero from "@/components/site/Hero";
 import LiveTicker from "@/components/site/LiveTicker";
 import TopUpWidget from "@/components/site/TopUpWidget";
 import Faq from "@/components/site/Faq";
+import { orders, packages, paymentMethods, memberships } from "@/db/schema";
 import {
   User,
   Gem,
@@ -48,23 +49,12 @@ function payIcon(type: string) {
 export default async function Home() {
   await ensureSeeded();
 
-  const [pkgs, methods, recent, completedAgg] = await Promise.all([
-    db
-      .select()
-      .from(packages)
-      .where(eq(packages.isActive, true))
-      .orderBy(asc(packages.sortOrder), asc(packages.id)),
-    db
-      .select()
-      .from(paymentMethods)
-      .where(eq(paymentMethods.isActive, true))
-      .orderBy(asc(paymentMethods.sortOrder)),
-    db
-      .select()
-      .from(orders)
-      .where(inArray(orders.status, ["completed", "processing"]))
-      .orderBy(desc(orders.createdAt))
-      .limit(10),
+  // 2. Home() function එක ඇතුලේ ඇති Promise.all කොටස මේ ආකාරයට සම්පූර්ණයෙන්ම වෙනස් කරන්න:
+  const [pkgs, mems, methods, recent, completedAgg] = await Promise.all([
+    db.select().from(packages).where(eq(packages.isActive, true)).orderBy(asc(packages.sortOrder), asc(packages.id)),
+    db.select().from(memberships).where(eq(memberships.isActive, true)).orderBy(asc(memberships.sortOrder), asc(memberships.id)),
+    db.select().from(paymentMethods).where(eq(paymentMethods.isActive, true)).orderBy(asc(paymentMethods.sortOrder)),
+    db.select().from(orders).where(inArray(orders.status, ["completed", "processing"])).orderBy(desc(orders.createdAt)).limit(10),
     db.select({ n: count() }).from(orders).where(eq(orders.status, "completed")),
   ]);
 
@@ -133,22 +123,30 @@ export default async function Home() {
                 gets refilled before your squad finishes loading.
               </p>
             </div>
-            <TopUpWidget
-              packages={pkgs.map((p) => ({
-                id: p.id,
-                diamonds: p.diamonds,
-                price: Number(p.price),
-                bonus: p.bonus,
-                label: p.label,
-                isPopular: p.isPopular,
-              }))}
-              methods={methods.map((m) => ({
-                id: m.id,
-                name: m.name,
-                type: m.type,
-                instructions: m.instructions,
-              }))}
-            />
+          // 3. එම ෆයිල් එකේ පහළින් ඇති <TopUpWidget /> කොටසට memberships එකතු කරන්න:
+<TopUpWidget
+  packages={pkgs.map((p) => ({
+    id: p.id,
+    diamonds: p.diamonds,
+    price: Number(p.price),
+    bonus: p.bonus,
+    label: p.label,
+    isPopular: p.isPopular,
+  }))}
+  memberships={mems.map((m) => ({
+    id: m.id,
+    name: m.name,
+    price: Number(m.price),
+    diamondsTotal: m.diamondsTotal,
+    label: m.label,
+  }))}
+  methods={methods.map((m) => ({
+    id: m.id,
+    name: m.name,
+    type: m.type,
+    instructions: m.instructions,
+  }))}
+/>
           </div>
         </section>
 

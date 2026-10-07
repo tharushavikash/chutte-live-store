@@ -2,16 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, RefreshCcw } from "lucide-react";
+import { Search, Loader2, RefreshCcw, FileImage } from "lucide-react";
 import { formatRs, ORDER_STATUSES } from "@/lib/format";
 
 export interface AdminOrder {
   id: number;
   orderRef: string;
   playerId: string;
-  diamonds: number;
+  itemName: string;
   price: number;
   paymentMethod: string;
+  receiptUrl?: string | null;
   status: string;
   createdAt: string;
 }
@@ -50,6 +51,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrder[] }) {
     setBusyId(id);
     const prev = list;
     setList((l) => l.map((o) => (o.id === id ? { ...o, status } : o)));
+
     try {
       const res = await fetch(`/api/orders/${id}`, {
         method: "PATCH",
@@ -79,7 +81,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrder[] }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search reference, UID or payment…"
+            placeholder="Search reference, UID or payment..."
             className="input-clean w-full rounded-xl py-2.5 pl-10 pr-4 text-[13px]"
           />
         </div>
@@ -113,14 +115,15 @@ export default function OrdersTable({ orders }: { orders: AdminOrder[] }) {
 
       <div className="soft-card overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px] text-left text-[12.5px]">
+          <table className="w-full min-w-[900px] text-left text-[12.5px]">
             <thead>
               <tr className="border-b border-line bg-canvas-2 text-[9.5px] font-bold uppercase tracking-[0.14em] text-ink-muted">
                 <th className="px-5 py-3.5">Reference</th>
                 <th className="px-3 py-3.5">Player UID</th>
-                <th className="px-3 py-3.5">Package</th>
+                <th className="px-3 py-3.5">Item</th>
                 <th className="px-3 py-3.5">Amount</th>
                 <th className="px-3 py-3.5">Payment</th>
+                <th className="px-3 py-3.5">Receipt</th>
                 <th className="px-3 py-3.5">Date</th>
                 <th className="px-3 py-3.5">Status</th>
                 <th className="px-5 py-3.5 text-right">Set</th>
@@ -133,11 +136,28 @@ export default function OrdersTable({ orders }: { orders: AdminOrder[] }) {
                     {o.orderRef}
                   </td>
                   <td className="px-3 py-3 tracking-wider text-ink">{o.playerId}</td>
-                  <td className="px-3 py-3 text-ink-soft">{o.diamonds.toLocaleString()} 💎</td>
+                  <td className="px-3 py-3 font-semibold text-ink-soft">{o.itemName}</td>
                   <td className="px-3 py-3 font-display font-bold text-ink">
                     {formatRs(o.price)}
                   </td>
                   <td className="px-3 py-3 text-ink-soft">{o.paymentMethod}</td>
+                  
+                  {/* අලුත් Receipt Column එක */}
+                  <td className="px-3 py-3">
+                    {o.receiptUrl ? (
+                      <a
+                        href={o.receiptUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex w-max items-center gap-1.5 rounded-lg bg-info/10 px-2.5 py-1.5 text-[11px] font-bold text-info transition-colors hover:bg-info/20"
+                      >
+                        <FileImage className="h-3.5 w-3.5" /> View Slip
+                      </a>
+                    ) : (
+                      <span className="text-[11px] text-ink-muted">No slip</span>
+                    )}
+                  </td>
+
                   <td className="whitespace-nowrap px-3 py-3 text-ink-muted">
                     {new Date(o.createdAt).toLocaleDateString()}{" "}
                     {new Date(o.createdAt).toLocaleTimeString([], {
@@ -175,7 +195,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrder[] }) {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-5 py-12 text-center text-[13.5px] text-ink-muted">
+                  <td colSpan={9} className="px-5 py-12 text-center text-[13.5px] text-ink-muted">
                     No orders match your filters.
                   </td>
                 </tr>

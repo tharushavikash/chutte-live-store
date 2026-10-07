@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Package, ShoppingCart, LogOut, ExternalLink, Gem } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, LogOut, ExternalLink, Gem, Crown } from "lucide-react";
 
 const LINKS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/packages", label: "Packages", icon: Package },
+  { href: "/admin/memberships", label: "Memberships", icon: Crown },
 ];
 
 export default function AdminNav() {
@@ -37,6 +38,7 @@ export default function AdminNav() {
             </span>
           </span>
         </div>
+
         <nav className="flex-1 space-y-1 px-3 py-5">
           {LINKS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
@@ -56,6 +58,7 @@ export default function AdminNav() {
             );
           })}
         </nav>
+
         <div className="space-y-1 border-t border-line px-3 py-4">
           <Link
             href="/"

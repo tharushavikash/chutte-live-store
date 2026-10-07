@@ -8,6 +8,8 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminOrdersPage() {
   await ensureSeeded();
+  
+  // Database එකෙන් orders ටික අලුත්ම ඒවා උඩින් එන විදිහට ගන්නවා
   const rows = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(300);
 
   return (
@@ -18,14 +20,16 @@ export default async function AdminOrdersPage() {
           Search, filter and update order fulfilment status in real time.
         </p>
       </div>
+
       <OrdersTable
         orders={rows.map((o) => ({
           id: o.id,
           orderRef: o.orderRef,
           playerId: o.playerId,
-          diamonds: o.diamonds,
+          itemName: o.itemName || "Unknown Item", // කලින් තිබුණු diamonds වෙනුවට itemName එකතු කර ඇත
           price: Number(o.price),
           paymentMethod: o.paymentMethod,
+          receiptUrl: o.receiptUrl, // අලුතින් එකතු කළ රිසිට්පත් ලින්ක් එක
           status: o.status,
           createdAt: o.createdAt.toISOString(),
         }))}

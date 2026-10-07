@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     order: {
       orderRef: order.orderRef,
       playerId: `${order.playerId.slice(0, 2)}***${order.playerId.slice(-2)}`,
-      diamonds: order.diamonds,
+      itemName: order.itemName, // මෙතැන diamonds වෙනුවට itemName යොදන්න
       price: Number(order.price),
       paymentMethod: order.paymentMethod,
       status: order.status,
